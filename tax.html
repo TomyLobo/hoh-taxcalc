@@ -26,7 +26,10 @@
             <input id="treasury-level" value="1" /></label>
         </p>
 
-        <p>Result: <b id="result"></b></p>
+        <p>
+            Result: <b id="result"></b><br/>
+            Total money: <b id="result-total"></b>
+        </p>
 
         <script>
             g_inputTownMoney = document.getElementById("town-money");
@@ -34,6 +37,7 @@
             g_inputTreasuryLevel = document.getElementById("treasury-level");
 
             g_result = document.getElementById("result");
+            g_result_total = document.getElementById("result-total");
 
             function goldRunScale()
             {
@@ -82,6 +86,7 @@
                 }
 
                 g_result.innerText = moneyTake + " (" + taxRate + "%)";
+                g_result_total.innerText = moneyTake + townMoney;
             }
 
             g_inputTownMoney.onkeyup = g_inputRunMoney.onkeyup = g_inputTreasuryLevel.onkeyup = onChange;
