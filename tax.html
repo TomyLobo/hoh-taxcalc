@@ -85,9 +85,24 @@
                 g_result_total.innerText = moneyTake + townMoney;
             }
 
-            g_inputTownMoney.onkeyup = g_inputRunMoney.onkeyup = g_inputTreasuryLevel.onkeyup = onChange;
-            g_inputTownMoney.onpaste = g_inputRunMoney.onpaste = g_inputTreasuryLevel.onpaste = onChange;
-            g_inputTownMoney.onchange = g_inputRunMoney.onchange = g_inputTreasuryLevel.onchange = onChange;
+            var controls = [
+                g_inputTownMoney,
+                g_inputRunMoney,
+                g_inputTreasuryLevel,
+            ];
+
+            var hooks = [
+                'onkeyup',
+                'onpaste',
+                'onchange',
+            ];
+
+            for (var hook of hooks) {
+                for (var control of controls) {
+                    control[hook] = onChange;
+                }
+            }
+
             onChange();
         </script>
     </body>
