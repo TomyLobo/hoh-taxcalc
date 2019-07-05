@@ -1,93 +1,93 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Heroes of Hammerwatch Tax Calculator</title>
-		<style>
-			body {
-				font-family: sans-serif;
-				font-size: 0.9em;
-			}
-		</style>
-	</head>
+    <head>
+        <title>Heroes of Hammerwatch Tax Calculator</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                font-size: 0.9em;
+            }
+        </style>
+    </head>
 
-	<body>
-		<p>
-			<label>Town money:<br>
-			<input id="town-money" value="0" /></label>
-		</p>
+    <body>
+        <p>
+            <label>Town money:<br>
+            <input id="town-money" value="0" /></label>
+        </p>
 
-		<p>
-			<label>Run money:<br>
-			<input id="run-money" value="1000" /></label>
-		</p>
+        <p>
+            <label>Run money:<br>
+            <input id="run-money" value="1000" /></label>
+        </p>
 
-		<p>
-			<label>Treasury level:<br>
-			<input id="treasury-level" value="0" /></label>
-		</p>
+        <p>
+            <label>Treasury level:<br>
+            <input id="treasury-level" value="0" /></label>
+        </p>
 
-		<p>Result: <b id="result"></b></p>
+        <p>Result: <b id="result"></b></p>
 
-		<script>
-			g_inputTownMoney = document.getElementById("town-money");
-			g_inputRunMoney = document.getElementById("run-money");
-			g_inputTreasuryLevel = document.getElementById("treasury-level");
+        <script>
+            g_inputTownMoney = document.getElementById("town-money");
+            g_inputRunMoney = document.getElementById("run-money");
+            g_inputTreasuryLevel = document.getElementById("treasury-level");
 
-			g_result = document.getElementById("result");
+            g_result = document.getElementById("result");
 
-			function goldRunScale()
-			{
-				var level = parseInt(g_inputTreasuryLevel.value);
-				if (level < 0) {
-					level = 0;
-				} else if (level > 4) {
-					level = 4;
-				}
+            function goldRunScale()
+            {
+                var level = parseInt(g_inputTreasuryLevel.value);
+                if (level < 0) {
+                    level = 0;
+                } else if (level > 4) {
+                    level = 4;
+                }
 
-				switch (level) {
-					case 1: return 10000;
-					case 2: return 15000;
-					case 3: return 20000;
-					case 4: return 25000;
-				}
-				return 1;
-			}
+                switch (level) {
+                    case 1: return 10000;
+                    case 2: return 15000;
+                    case 3: return 20000;
+                    case 4: return 25000;
+                }
+                return 1;
+            }
 
-			function calcTaxRate(money)
-			{
-				return Math.pow(money / goldRunScale() + 1, -1);
-			}
+            function calcTaxRate(money)
+            {
+                return Math.pow(money / goldRunScale() + 1, -1);
+            }
 
-			function applyTaxRate(townMoney, runMoney)
-			{
-				var money = 0;
-				while (runMoney > 0) {
-					money += Math.floor(Math.min(250, runMoney) * 1000 * calcTaxRate(townMoney + Math.floor(money / 1000)));
-					runMoney -= 250;
-				}
-				return Math.floor(money / 1000);
-			}
+            function applyTaxRate(townMoney, runMoney)
+            {
+                var money = 0;
+                while (runMoney > 0) {
+                    money += Math.floor(Math.min(250, runMoney) * 1000 * calcTaxRate(townMoney + Math.floor(money / 1000)));
+                    runMoney -= 250;
+                }
+                return Math.floor(money / 1000);
+            }
 
-			function onChange()
-			{
-				var townMoney = parseInt(g_inputTownMoney.value);
-				var runMoney = parseInt(g_inputRunMoney.value);
+            function onChange()
+            {
+                var townMoney = parseInt(g_inputTownMoney.value);
+                var runMoney = parseInt(g_inputRunMoney.value);
 
-				var money = Math.max(250, runMoney);
-				var moneyTake = applyTaxRate(townMoney, money);
-				var taxRate = Math.round((1 - moneyTake / money) * 100 * 1000) / 1000;
+                var money = Math.max(250, runMoney);
+                var moneyTake = applyTaxRate(townMoney, money);
+                var taxRate = Math.round((1 - moneyTake / money) * 100 * 1000) / 1000;
 
-				if (runMoney <= 250) {
-					moneyTake = runMoney;
-				}
+                if (runMoney <= 250) {
+                    moneyTake = runMoney;
+                }
 
-				g_result.innerText = moneyTake + " (" + taxRate + "%)";
-			}
+                g_result.innerText = moneyTake + " (" + taxRate + "%)";
+            }
 
-			g_inputTownMoney.onkeyup = g_inputRunMoney.onkeyup = g_inputTreasuryLevel.onkeyup = onChange;
-			g_inputTownMoney.onpaste = g_inputRunMoney.onpaste = g_inputTreasuryLevel.onpaste = onChange;
-			g_inputTownMoney.onchange = g_inputRunMoney.onchange = g_inputTreasuryLevel.onchange = onChange;
-			onChange();
-		</script>
-	</body>
+            g_inputTownMoney.onkeyup = g_inputRunMoney.onkeyup = g_inputTreasuryLevel.onkeyup = onChange;
+            g_inputTownMoney.onpaste = g_inputRunMoney.onpaste = g_inputTreasuryLevel.onpaste = onChange;
+            g_inputTownMoney.onchange = g_inputRunMoney.onchange = g_inputTreasuryLevel.onchange = onChange;
+            onChange();
+        </script>
+    </body>
 </html>
