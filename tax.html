@@ -31,6 +31,25 @@
             Total money: <b id="result-total"></b>
         </p>
 
+        <p>
+            <label>Town money:<br>
+            <input id="inv-town-money" value="0" /></label>
+        </p>
+
+        <p>
+            <label>Target money:<br>
+            <input id="inv-total-money" value="1000" /></label>
+        </p>
+
+        <p>
+            <label>Treasury level:<br>
+            <input id="inv-treasury-level" value="1" /></label>
+        </p>
+
+        <p>
+            Run Money: <b id="inv-result"></b><br/>
+        </p>
+
         <script>
             g_inputTownMoney = document.getElementById("town-money");
             g_inputRunMoney = document.getElementById("run-money");
@@ -38,6 +57,12 @@
 
             g_result = document.getElementById("result");
             g_result_total = document.getElementById("result-total");
+
+            g_invInputTownMoney = document.getElementById("inv-town-money");
+            g_invInputTargetMoney = document.getElementById("inv-total-money");
+            g_invInputTreasuryLevel = document.getElementById("inv-treasury-level");
+
+            g_invResult = document.getElementById("inv-result");
 
             function goldRunScale(level)
             {
@@ -85,10 +110,58 @@
                 g_result_total.innerText = moneyTake + townMoney;
             }
 
+            function applyInvTaxRate(level, townMoney, moneyTake)
+            {
+                function bisect(lowerBounds, upperBounds)
+                {
+                    if (lowerBounds >= upperBounds - 1) {
+                        return upperBounds;
+                    }
+
+                    var middle = Math.floor((lowerBounds + upperBounds)/2)
+
+                    if (applyTaxRate(level, townMoney, middle) < moneyTake) {
+                        lowerBounds = middle;
+                    } else {
+                        upperBounds = middle;
+                    }
+
+                    return bisect(lowerBounds, upperBounds);
+                }
+
+                var lowerBounds = 0;
+                for (var runMoney = 250; runMoney < 0xffffffff; runMoney *= 2) {
+                    if (applyTaxRate(level, townMoney, runMoney) < moneyTake) {
+                        lowerBounds = runMoney;
+                    } else {
+                        var upperBounds = runMoney;
+                        return bisect(lowerBounds, upperBounds);
+                    }
+                }
+            }
+
+            function onInvChange()
+            {
+                var townMoney = parseInt(g_invInputTownMoney.value);
+                var totalMoney = parseInt(g_invInputTargetMoney.value);
+                var level = parseInt(g_invInputTreasuryLevel.value);
+
+                var moneyTake = totalMoney - townMoney;
+                var runMoney = applyInvTaxRate(level, townMoney, moneyTake);
+                var taxRate = Math.round((1 - moneyTake / runMoney) * 100 * 1000) / 1000;
+                g_invResult.innerText = runMoney + " (" + taxRate + "%)";
+            }
+
             var controls = [
                 g_inputTownMoney,
                 g_inputRunMoney,
                 g_inputTreasuryLevel,
+            ];
+
+            var invControls = [
+                g_invInputTownMoney,
+                g_invInputTargetMoney,
+                g_invInputTreasuryLevel,
             ];
 
             var hooks = [
@@ -101,9 +174,14 @@
                 for (var control of controls) {
                     control[hook] = onChange;
                 }
+
+                for (var invControl of invControls) {
+                    invControl[hook] = onInvChange;
+                }
             }
 
             onChange();
+            onInvChange();
         </script>
     </body>
 </html>
