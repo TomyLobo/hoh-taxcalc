@@ -39,9 +39,8 @@
             g_result = document.getElementById("result");
             g_result_total = document.getElementById("result-total");
 
-            function goldRunScale()
+            function goldRunScale(level)
             {
-                var level = parseInt(g_inputTreasuryLevel.value);
                 if (level < 0) {
                     level = 0;
                 } else if (level > 4) {
@@ -57,16 +56,16 @@
                 return 1;
             }
 
-            function calcTaxRate(money)
+            function calcTaxRate(level, money)
             {
-                return Math.pow(money / goldRunScale() + 1, -1);
+                return Math.pow(money / goldRunScale(level) + 1, -1);
             }
 
-            function applyTaxRate(townMoney, runMoney)
+            function applyTaxRate(level, townMoney, runMoney)
             {
                 var money = 0;
                 while (runMoney > 0) {
-                    money += Math.floor(Math.min(250, runMoney) * 1000 * calcTaxRate(townMoney + Math.floor(money / 1000)));
+                    money += Math.floor(Math.min(250, runMoney) * 1000 * calcTaxRate(level, townMoney + Math.floor(money / 1000)));
                     runMoney -= 250;
                 }
                 return Math.floor(money / 1000);
@@ -76,9 +75,10 @@
             {
                 var townMoney = parseInt(g_inputTownMoney.value);
                 var runMoney = parseInt(g_inputRunMoney.value);
+                var level = parseInt(g_inputTreasuryLevel.value);
 
                 var money = Math.max(250, runMoney);
-                var moneyTake = applyTaxRate(townMoney, money);
+                var moneyTake = applyTaxRate(level, townMoney, money);
                 var taxRate = Math.round((1 - moneyTake / money) * 100 * 1000) / 1000;
 
                 if (runMoney <= 250) {
