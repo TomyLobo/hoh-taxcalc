@@ -81,10 +81,6 @@
                 var moneyTake = applyTaxRate(level, townMoney, money);
                 var taxRate = Math.round((1 - moneyTake / money) * 100 * 1000) / 1000;
 
-                if (runMoney <= 250) {
-                    moneyTake = runMoney;
-                }
-
                 g_result.innerText = moneyTake + " (" + taxRate + "%)";
                 g_result_total.innerText = moneyTake + townMoney;
             }
