@@ -164,6 +164,13 @@
                 for (const hook of hooks) {
                     control[hook] = callback;
                 }
+
+                control.onkeypress = function() {
+                    if (event.charCode == 8 || event.charCode == 0 || event.charCode == 13)
+                        return null;
+
+                    return event.charCode >= 48 && event.charCode <= 57;
+                }
             }
 
             onChange();
