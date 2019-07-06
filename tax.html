@@ -164,7 +164,36 @@
             for (const [ control, callback ] of controls) {
                 control.previousValue = control.value;
                 for (const hook of hooks) {
-                    control[hook] = callback;
+                    control[hook] = function() {
+                        if (control.value == '') {
+                            control.value = 0;
+                        }
+
+                        let intValue = parseInt(control.value);
+
+                        if (isNaN(intValue)) {
+                            control.value = control.previousValue;
+                            return;
+                        }
+
+                        if (String(intValue) != control.value) {
+                            control.value = String(intValue);
+                        }
+
+                        if (control.min && intValue < control.min) {
+                            control.value = control.min;
+                        } else if (control.max && intValue > control.max) {
+                            control.value = control.max;
+                        }
+
+                        if (control.previousValue == control.value) {
+                            return;
+                        }
+
+                        control.previousValue = control.value;
+
+                        callback();
+                    }
                 }
 
                 control.onkeypress = function() {
