@@ -66,19 +66,11 @@
 
             function goldRunScale(level)
             {
-                if (level < 0) {
-                    level = 0;
-                } else if (level > 4) {
-                    level = 4;
+                if (level < 1) {
+                    level = 1;
                 }
 
-                switch (level) {
-                    case 1: return 10000;
-                    case 2: return 15000;
-                    case 3: return 20000;
-                    case 4: return 25000;
-                }
-                return 1;
+                return (level + 1) * 5000;
             }
 
             function calcTaxRate(level, money)
