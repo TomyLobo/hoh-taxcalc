@@ -145,15 +145,12 @@
             }
 
             var controls = [
-                g_inputTownMoney,
-                g_inputRunMoney,
-                g_inputTreasuryLevel,
-            ];
-
-            var invControls = [
-                g_invInputTownMoney,
-                g_invInputTargetMoney,
-                g_invInputTreasuryLevel,
+                [ g_inputTownMoney, onChange ],
+                [ g_inputRunMoney, onChange ],
+                [ g_inputTreasuryLevel, onChange ],
+                [ g_invInputTownMoney, onInvChange ],
+                [ g_invInputTargetMoney, onInvChange ],
+                [ g_invInputTreasuryLevel, onInvChange ],
             ];
 
             var hooks = [
@@ -162,13 +159,10 @@
                 'onchange',
             ];
 
-            for (var hook of hooks) {
-                for (var control of controls) {
-                    control[hook] = onChange;
-                }
-
-                for (var invControl of invControls) {
-                    invControl[hook] = onInvChange;
+            for (const [ control, callback ] of controls) {
+                control.previousValue = control.value;
+                for (const hook of hooks) {
+                    control[hook] = callback;
                 }
             }
 
