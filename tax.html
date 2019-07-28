@@ -73,16 +73,16 @@
                 return (level + 1) * 5000;
             }
 
-            function calcTaxRate(level, money)
+            function calcTaxRate(midpoint, money)
             {
-                return Math.pow(money / goldRunScale(level) + 1, -1);
+                return Math.pow(money / midpoint + 1, -1);
             }
 
-            function applyTaxRate(level, townMoney, runMoney)
+            function applyTaxRate(midpoint, townMoney, runMoney)
             {
                 var money = 0;
                 while (runMoney > 0) {
-                    money += Math.floor(Math.min(250, runMoney) * 1000 * calcTaxRate(level, townMoney + Math.floor(money / 1000)));
+                    money += Math.floor(Math.min(250, runMoney) * 1000 * calcTaxRate(midpoint, townMoney + Math.floor(money / 1000)));
                     runMoney -= 250;
                 }
                 return Math.floor(money / 1000);
@@ -94,15 +94,17 @@
                 var runMoney = parseInt(g_inputRunMoney.value);
                 var level = parseInt(g_inputTreasuryLevel.value);
 
+                var midpoint = goldRunScale(level);
+
                 var money = Math.max(250, runMoney);
-                var moneyTake = applyTaxRate(level, townMoney, money);
+                var moneyTake = applyTaxRate(midpoint, townMoney, money);
                 var taxRate = Math.round((1 - moneyTake / money) * 100 * 1000) / 1000;
 
                 g_result.innerText = moneyTake + " (" + taxRate + "%)";
                 g_result_total.innerText = moneyTake + townMoney;
             }
 
-            function applyInvTaxRate(level, townMoney, moneyTake)
+            function applyInvTaxRate(midpoint, townMoney, moneyTake)
             {
                 function bisect(lowerBounds, upperBounds)
                 {
@@ -112,7 +114,7 @@
 
                     var middle = Math.floor((lowerBounds + upperBounds)/2)
 
-                    if (applyTaxRate(level, townMoney, middle) < moneyTake) {
+                    if (applyTaxRate(midpoint, townMoney, middle) < moneyTake) {
                         lowerBounds = middle;
                     } else {
                         upperBounds = middle;
@@ -123,7 +125,7 @@
 
                 var lowerBounds = 0;
                 for (var runMoney = 250; runMoney < 0xffffffff; runMoney *= 2) {
-                    if (applyTaxRate(level, townMoney, runMoney) < moneyTake) {
+                    if (applyTaxRate(midpoint, townMoney, runMoney) < moneyTake) {
                         lowerBounds = runMoney;
                     } else {
                         var upperBounds = runMoney;
@@ -140,8 +142,10 @@
                 var totalMoney = parseInt(g_invInputTargetMoney.value);
                 var level = parseInt(g_invInputTreasuryLevel.value);
 
+                var midpoint = goldRunScale(level);
+
                 var moneyTake = totalMoney - townMoney;
-                var runMoney = applyInvTaxRate(level, townMoney, moneyTake);
+                var runMoney = applyInvTaxRate(midpoint, townMoney, moneyTake);
                 var taxRate = Math.round((1 - moneyTake / runMoney) * 100 * 1000) / 1000;
                 g_invResult.innerText = runMoney + " (" + taxRate + "%)";
             }
