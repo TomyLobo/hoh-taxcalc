@@ -23,7 +23,9 @@
 
         <p>
             <label>Treasury level:<br>
-            <input type="number" min="1" id="treasury-level" value="1" /></label>
+            <input type="number" min="1" id="treasury-level" value="1" /></label><br>
+            <label><input type="checkbox" id="dragon-killed"/>Dragon killed</label><br>
+            <label><input type="checkbox" id="offshore-account"/>Offshore account</label>
         </p>
 
         <p>
@@ -43,7 +45,9 @@
 
         <p>
             <label>Treasury level:<br>
-            <input type="number" min="1" id="inv-treasury-level" value="1" /></label>
+            <input type="number" min="1" id="inv-treasury-level" value="1" /></label><br>
+            <label><input type="checkbox" id="inv-dragon-killed"/>Dragon killed</label><br>
+            <label><input type="checkbox" id="inv-offshore-account"/>Offshore account</label>
         </p>
 
         <p>
@@ -54,6 +58,8 @@
             g_inputTownMoney = document.getElementById("town-money");
             g_inputRunMoney = document.getElementById("run-money");
             g_inputTreasuryLevel = document.getElementById("treasury-level");
+            g_inputDragonKilled = document.getElementById("dragon-killed");
+            g_inputOffshoreAccount = document.getElementById("offshore-account");
 
             g_result = document.getElementById("result");
             g_result_total = document.getElementById("result-total");
@@ -61,6 +67,8 @@
             g_invInputTownMoney = document.getElementById("inv-town-money");
             g_invInputTargetMoney = document.getElementById("inv-total-money");
             g_invInputTreasuryLevel = document.getElementById("inv-treasury-level");
+            g_invInputDragonKilled = document.getElementById("inv-dragon-killed");
+            g_invInputOffshoreAccount = document.getElementById("inv-offshore-account");
 
             g_invResult = document.getElementById("inv-result");
 
@@ -95,6 +103,8 @@
                 var level = parseInt(g_inputTreasuryLevel.value);
 
                 var midpoint = goldRunScale(level);
+                if (g_inputDragonKilled.checked) midpoint *= 2;
+                if (g_inputOffshoreAccount.checked) midpoint *= 4;
 
                 var money = Math.max(250, runMoney);
                 var moneyTake = applyTaxRate(midpoint, townMoney, money);
@@ -143,6 +153,8 @@
                 var level = parseInt(g_invInputTreasuryLevel.value);
 
                 var midpoint = goldRunScale(level);
+                if (g_invInputDragonKilled.checked) midpoint *= 2;
+                if (g_invInputOffshoreAccount.checked) midpoint *= 4;
 
                 var moneyTake = totalMoney - townMoney;
                 var runMoney = applyInvTaxRate(midpoint, townMoney, moneyTake);
@@ -154,9 +166,13 @@
                 [ g_inputTownMoney, onChange ],
                 [ g_inputRunMoney, onChange ],
                 [ g_inputTreasuryLevel, onChange ],
+                [ g_inputDragonKilled, onChange ],
+                [ g_inputOffshoreAccount, onChange ],
                 [ g_invInputTownMoney, onInvChange ],
                 [ g_invInputTargetMoney, onInvChange ],
                 [ g_invInputTreasuryLevel, onInvChange ],
+                [ g_invInputDragonKilled, onInvChange ],
+                [ g_invInputOffshoreAccount, onInvChange ],
             ];
 
             var hooks = [
@@ -168,6 +184,11 @@
             for (const [ control, callback ] of controls) {
                 control.previousValue = control.value;
                 for (const hook of hooks) {
+                    if (control.type == 'checkbox') {
+                        control[hook] = callback;
+                        continue;
+                    }
+
                     control[hook] = function() {
                         if (control.value == '') {
                             control.value = 0;
